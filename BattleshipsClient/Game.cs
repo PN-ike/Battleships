@@ -122,8 +122,8 @@ namespace BattleshipsClient
             s = new Ship(x, y, Position.vertical, length, Mark.I);
             fleet[8] = setShip(s);
             */
-            x = 7;
-            y = 5;
+            x = 0;
+            y = 0;
             s = new Ship(x, y, Position.horizontal, length, Mark.A);
             fleet[0] = setShip(s);
         }

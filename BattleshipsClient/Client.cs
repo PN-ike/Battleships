@@ -2,6 +2,7 @@
 using System.Text;
 using System.IO;
 using System.Net.Sockets;
+using BattleshipsServer;
 
 namespace BattleshipsClient
 {
@@ -24,10 +25,10 @@ namespace BattleshipsClient
             Stream stm = this.tcpclnt.GetStream();
             ASCIIEncoding asen = new ASCIIEncoding();
 
-            byte[] bb = new byte[100];
+            byte[] bb = new byte[100]; //TODO change buffer  
             int k = stm.Read(bb, 0, 100);
 
-            for (int i = 0; i < k; i++)
+            for (int i = 0; i < k; i++) //TODO 0 appended?????
             {
                 sb.Append(Convert.ToChar(bb[i]));
             }

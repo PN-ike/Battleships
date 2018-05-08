@@ -44,11 +44,16 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Battleships\BattleshipsServer.csproj">
+      <Project>{3e90d15c-4d72-49dc-9163-e80a53969b8b}</Project>
+      <Name>BattleshipsServer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

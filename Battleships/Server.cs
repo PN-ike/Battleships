@@ -3,10 +3,9 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 
-
 namespace BattleshipsServer
 {
-    public class Server
+    class Server
     {
 
         private Socket p1;
@@ -45,7 +44,7 @@ namespace BattleshipsServer
             Console.ReadLine();
 
         }
-
+        
         static void Main(string[] args)
         {
             Server myServer = new Server();
@@ -60,22 +59,19 @@ namespace BattleshipsServer
             sendMessage(p2, Message.RECEIVE_COORDINATES); //inform p2 that he has to check damage-coordinates
             sendCoordinates(p2, x, y); // send coordinates to p2
             String msg = receiveMessage(p2); // receive damageMessage
-            if (msg == Message.YOU_HAVE_WON)
-            {
+            sendMessage(p1, msg);  //send the damageMessage to p1
 
-                //TODD is not entered!!!!!!!!!!!!!!!! maybe with .equals()
+            if (msg == Message.YOU_HAVE_WON) //TODO changed from .equals to ==
+            {
                 isFinished = true;
                 Console.WriteLine("I am exiting now");
             }
-
-            sendMessage(p1, msg);  //send the damageMessage to p1
-            
         }
 
         private void playGame()
         {
             Boolean p1Turn = true;
-            
+
             sendMessageToAll(Message.SET_YOUR_FLEET);
             receiveMessage(p1);
             receiveMessage(p2);
@@ -87,14 +83,14 @@ namespace BattleshipsServer
                 {
                     turn(p1, p2);
                     p1Turn = false;
-                } else
+                }
+                else
                 {
                     turn(p2, p1);
                     p1Turn = true;
                 }
             }
             Console.ReadLine();
-            Console.WriteLine("\nSending : " + Message.CYA + " to all");
             sendMessageToAll(Message.CYA);
         }
 
@@ -106,7 +102,7 @@ namespace BattleshipsServer
             sendMessage(s, BitConverter.GetBytes(y));
             Array.Clear(b, 0, b.Length);
             s.Receive(b);
-            Console.WriteLine(s.RemoteEndPoint + " has sent: " + convertToStringMessage(b));       
+            Console.WriteLine(s.RemoteEndPoint + " has sent: " + convertToStringMessage(b));
         }
 
         private void sendMessage(Socket s, byte[] data)
@@ -145,7 +141,7 @@ namespace BattleshipsServer
             sendMessage(p2, data);
         }
 
-        private void receiveCoordinates(Socket s, out int x, out int y)
+        private void receiveCoordinates(Socket s, out int x, out int y) //TODO test change bufferfromp... to b buffer
         {
             //TODO socketException after youWin
             s.Receive(bufferFromP1);
@@ -169,11 +165,16 @@ namespace BattleshipsServer
         }
         private String convertToStringMessage(byte[] b)
         {
+
+
             StringBuilder sb = new StringBuilder();
 
             for (int i = 0; i < b.Length; i++)
             {
-                sb.Append(Convert.ToChar(b[i]));
+                if (b[i] != 0) // dont append the 0 from the byte[]
+                {
+                    sb.Append(Convert.ToChar(b[i]));
+                }
             }
             return sb.ToString();
         }

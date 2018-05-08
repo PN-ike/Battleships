@@ -2,10 +2,10 @@
 
 namespace BattleshipsServer
 {
-    sealed class Message
+    public sealed class Message
     {
 
-        public const String IP = "10.0.0.4";
+        public const String IP = "140.78.228.206";
 
         public const String SET_YOUR_FLEET = "SetFleet";
         public const String WAIT = "Wait";

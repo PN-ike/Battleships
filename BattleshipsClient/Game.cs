@@ -4,48 +4,56 @@ using System.Text;
 namespace BattleshipsClient
 {
 
+
     class Game
     {
         private Mark[,] gameField = new Mark[10, 10]; //y, x
-        private Ship[] fleet = new Ship[1]; //TODO change back
+        private Ship[] fleet = new Ship[10]; //TODO change back
 
         public Game()
         {
             initGameField();
         }
-
-        public Boolean isFinished()
+        
+            public Boolean isFinished()
         {
             Boolean isFinished = true;
 
+            /*
             foreach (Ship s in fleet) {
                 if (s.hp != 0)
                 {
                     isFinished = false;
                 }
             }
+            */
 
-            return isFinished;
+            //TODO
+            return false;
         }
 
         public Boolean checkDamage(int x, int y)
         {
             Boolean newDamage = false;
 
+            Console.WriteLine("x" + x);
+            Console.WriteLine("y" + y);
+
             if (gameField[y, x] == Mark.X)
             {
                 Console.WriteLine("Ship was already hit here");
+                return false;
             }
             else if (gameField[y, x] == Mark._)
-            {
+            {   
                 Console.WriteLine("Missed");
             }
             else
             {
-                Ship s = getShip(x, y);
-                s.hp--;
-                gameField[y, x] = Mark.X;
-                printGameField();
+                //Ship s = getShip(x, y);
+                //s.hp--;
+                //gameField[y, x] = Mark.X;
+                //printGameField();
                 newDamage = true;
             }
             return newDamage;
@@ -152,6 +160,11 @@ namespace BattleshipsClient
                         s = new Ship(x, y, p, length, m);
                         isValidShip = checkValidShip(s);
                     }
+                    Console.WriteLine("x" + s.x);
+                    Console.WriteLine("y" + s.y);
+                    Console.WriteLine("i" + i);
+                    Console.WriteLine("j" + j);
+
                     fleet[i+j] = setShip(s); //TODO check if fleet[i+j] is correct
                     m++;
                     printGameField();
@@ -164,8 +177,10 @@ namespace BattleshipsClient
             return;
         }
 
-        private bool checkValidShip(Ship s)
+        public bool checkValidShip(Ship s)
         {
+
+
       
             //TODO check if ship is out of gameField
             //TODO check if there is a neighbouring ship
@@ -290,7 +305,7 @@ namespace BattleshipsClient
         }
     }
 
-    enum Position { horizontal = 1, vertical = 2 };
+    public enum Position { horizontal = 1, vertical = 2 };
 
     enum Mark { X = 0, A = 1, B = 2, C = 3, D = 4, E = 5, F = 6, G = 7, H = 8, I = 9, J = 10, _ = -1 }
 

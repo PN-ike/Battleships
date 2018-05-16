@@ -52,15 +52,25 @@ namespace BattleshipsServer
 
         private void turn(Socket p1, Socket p2)
         {
+            Console.WriteLine("Server Before sending shoot");
             sendMessage(p1, Message.SHOOT); //send shoot instruction to p1
+            Console.WriteLine("Server After sending shoot");
             int x = -1;
             int y = -1;
+            Console.WriteLine("Server Before receiving the shoot coordinates");
             receiveCoordinates(p1, out x, out y); //receive the chosen coordinates form p1
+            Console.WriteLine("Server After receiving the shoot coordinates");
+            Console.WriteLine("Server Before sending the shoot coordinates to the other player");
             sendMessage(p2, Message.RECEIVE_COORDINATES); //inform p2 that he has to check damage-coordinates
             sendCoordinates(p2, x, y); // send coordinates to p2
+            Console.WriteLine("Server After sending the shoot coordinates to the other player");
+            sendMessage(p2, Message.CHECK_DAMAGE);
+            Console.WriteLine("Server Before receiving the damage message");
             String msg = receiveMessage(p2); // receive damageMessage
+            Console.WriteLine("Server After receiving the damage message");
+            Console.WriteLine("Server Before sending the damage message to the shooting player");
             sendMessage(p1, msg);  //send the damageMessage to p1
-
+            Console.WriteLine("Server After sending the damage message to the shooting player");
             if (msg == Message.YOU_HAVE_WON) //TODO changed from .equals to ==
             {
                 isFinished = true;
@@ -127,14 +137,7 @@ namespace BattleshipsServer
                 Console.WriteLine(e.StackTrace);
             }
         }
-
-        private void sendMessageToAll(byte[] data)
-        {
-            sendMessage(p1, data);
-            sendMessage(p2, data);
-        }
-
-
+        
         private void sendMessageToAll(String data)
         {
             sendMessage(p1, data);
@@ -155,7 +158,6 @@ namespace BattleshipsServer
 
         private String receiveMessage(Socket s)
         {
-
             s.Receive(b);
             String messageReceived = convertToStringMessage(b);
 
@@ -165,7 +167,6 @@ namespace BattleshipsServer
         }
         private String convertToStringMessage(byte[] b)
         {
-
 
             StringBuilder sb = new StringBuilder();
 
@@ -178,16 +179,5 @@ namespace BattleshipsServer
             }
             return sb.ToString();
         }
-
-        private String receiveMessageFromAll(Socket s)
-        {
-            s.Receive(b);
-            String messageReceived = convertToStringMessage(b);
-
-            Console.WriteLine("\nReceived " + messageReceived + " from All");
-
-            return messageReceived;
-        }
-
     }
 }

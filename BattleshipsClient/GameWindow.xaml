@@ -1,0 +1,262 @@
+﻿<Window x:Class="BattleshipsClient.GameWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:BattleshipsClient="clr-namespace:BattleshipsClient"
+            xmlns:converters="clr-namespace:BattleshipsClient.Converters"
+             mc:Ignorable="d" 
+            Width="1050">
+
+    <Window.DataContext>
+        <BattleshipsClient:MainWindowViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <converters:InvertableBooleanToVisibilityConverter x:Key="InvertedBoolToVis" />
+        <converters:InvertedBooleanConverter x:Key="InvertedBoolConverter" />
+    </Window.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <!-- Start-Button and HP-Counter -->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60" />
+                <RowDefinition Height="*" MinHeight="255"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" 
+                           Text="{Binding MyHPLeft}"
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Center"
+                           FontSize="32"
+                           FontWeight="Bold"/>
+
+                <Button Grid.Column="1" Content="{Binding StartButtonContent}" Width="80" Height="40" FontSize="25" FontWeight="Bold" Command="{Binding StartCommand}" />
+
+                <TextBlock Grid.Column="2" 
+                           Text="{Binding EnemyHPLeft}"
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Center"
+                           FontSize="32"
+                           FontWeight="Bold"/>
+            </Grid>
+
+            <!-- MAIN PLAY AREA -->
+            <Grid Grid.Row="1" Background="CadetBlue">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" MinWidth="550" />
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <ItemsControl IsEnabled="{Binding IsControlPanelEnabled}" ItemsSource="{Binding Tiles}" MinWidth="300" Margin="10,5,9.667,5.333">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="1" Background="#656565" MinWidth="23" MinHeight="23">
+
+
+                                <!-- SHOWING HIT OR MISS-->
+                                <Grid Margin="1" Background="Red" MinWidth="23" MinHeight="23" 
+                                      Visibility="{Binding IsShip, Converter={StaticResource InvertedBoolToVis}, ConverterParameter=Normal}">
+                                </Grid>
+                                <Grid Margin="1" Background="Blue" MinWidth="23" MinHeight="23" 
+                                      Visibility="{Binding IsShip, Converter={StaticResource InvertedBoolToVis}, ConverterParameter=Inverted}">
+                                </Grid>
+                                
+                                <!-- COVERING BUTTON USER SELECTS TO UNCOVER -->
+                                <Button Content="{Binding Status}"
+                                        Visibility="{Binding Covered, Converter={StaticResource InvertedBoolToVis}, ConverterParameter=Normal}" 
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.UncoverTileCommand}" 
+                                        CommandParameter="{Binding}">
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                </ItemsControl>
+
+                <!-- The set area -->
+                <Grid Grid.Column="1"> <!-- Column 1 from Main-Grid -->
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="80" />
+                        <ColumnDefinition Width="Auto" MinWidth="80"/>
+                        <ColumnDefinition Width="Auto" MinWidth="80"/>
+                        <ColumnDefinition Width="Auto" MinWidth="80"/>
+                        <ColumnDefinition Width="Auto" MinWidth="80"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+
+                    <!-- Ugly coded static Labels-->
+                    <Grid Grid.Column="0" Grid.Row="1" Width="100">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="Length 5" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Grid.Row="1" Text="Length 4" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Grid.Row="2" Text="Length 4" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Grid.Row="3" Text="Length 3" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Grid.Row="4" Text="Length 3" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Grid.Row="5" Text="Length 3" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Grid.Row="6" Text="Length 2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Grid.Row="7" Text="Length 2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Grid.Row="8" Text="Length 2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Grid.Row="9" Text="Length 2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold"/>
+
+                    </Grid>
+
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Positioning" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold" Width="100"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="X-Value" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold" Width="80"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="Y-Value" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold" Width="80"/>
+
+
+                    <!-- The Positioning of the Ship -->
+                    <Grid Grid.Column="1" Grid.Row="1" >
+                        <ItemsControl ItemsSource="{Binding Inputs}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBox HorizontalAlignment="Center" 
+                                             VerticalAlignment="Center" 
+                                             FontSize="16" 
+                                             FontWeight="Bold" 
+                                             MaxLength="1" 
+                                             IsEnabled="{Binding IsInputEnabled}"
+                                             Text="{Binding Position}" 
+                                             MinWidth="40">
+                                    </TextBox>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Rows="10" Columns="1" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
+
+                    <!-- The X Value of the Ship -->
+                    <Grid Grid.Column="2" Grid.Row="1">
+                        <ItemsControl ItemsSource="{Binding Inputs}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBox HorizontalAlignment="Center" 
+                                             VerticalAlignment="Center" 
+                                             FontSize="16" 
+                                             FontWeight="Bold" 
+                                             MaxLength="1" 
+                                             TextAlignment="Center"
+                                             IsEnabled="{Binding IsInputEnabled}"
+                                             Text="{Binding XValue}" 
+                                             MinWidth="40">
+                                    </TextBox>
+
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Rows="10" Columns="1" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
+
+
+                    <!-- The the Y Value of the Ship -->
+                    <Grid Grid.Column="3" Grid.Row="1">
+                        <ItemsControl ItemsSource="{Binding Inputs}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBox HorizontalAlignment="Center" 
+                                             VerticalAlignment="Center" 
+                                             FontSize="16" 
+                                             FontWeight="Bold" 
+                                             TextAlignment="Center"
+                                             MaxLength="1" 
+                                             Text="{Binding YValue}" 
+                                             MinWidth="40" 
+                                             IsEnabled="{Binding IsInputEnabled}">
+                                    </TextBox>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Rows="10" Columns="1" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
+
+                    <!-- SET BUTTON-->
+                    <Grid Grid.Column="4" Grid.Row="1">
+                        <ItemsControl ItemsSource="{Binding Inputs}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Content="Set" 
+                                            HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center" 
+                                            FontSize="16" 
+                                            FontWeight="Bold" 
+                                            MinHeight="20" 
+                                            MinWidth="80" 
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.SetShipCommand}" CommandParameter="{Binding}" 
+                                            IsEnabled="{Binding IsInputEnabled}">
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Rows="10" Columns="1" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
+                    
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

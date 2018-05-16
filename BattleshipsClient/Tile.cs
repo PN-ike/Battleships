@@ -9,8 +9,7 @@ namespace BattleshipsClient
         private int _index;
         private int _row;
         private int _col;
-        private string _status = "";
-        private bool _isShip = false;
+        private bool _isShip = false; 
 
 
         public bool IsShip
@@ -24,31 +23,11 @@ namespace BattleshipsClient
             get { return _index; }
             set { SetProperty(ref _index, value); }
         }
-
-        public string DisplayTileContent
-        {
-            get { if (IsShip)
-                {
-                    return "HIT";
-                }
-                else
-                {
-                    return "MISSED";
-                }
-            }
-        }
-
-
+        
         public bool Covered
         {
             get { return _covered; }
             set { SetProperty(ref _covered, value); }
-        }
-
-        public string Status
-        {
-            get { return _status; }
-            set { SetProperty(ref _status, value); }
         }
 
         public int Row

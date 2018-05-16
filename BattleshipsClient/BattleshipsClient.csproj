@@ -83,7 +83,6 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Client.cs" />
-    <Compile Include="Converters\InvertedBooleanConverter.cs" />
     <Compile Include="Converters\InvertibleBooleanToVisibilityConverter.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameWindow.xaml.cs">
@@ -114,5 +113,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

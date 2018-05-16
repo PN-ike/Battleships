@@ -11,7 +11,7 @@ namespace BattleshipsClient
     {
         private int _index;
         private int _row;
-        private Boolean _isInputEnabled = false;
+        private Boolean _isInputEnabled = false; //TODO set false for actual palying
 
         public Boolean IsInputEnabled
         {

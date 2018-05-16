@@ -10,14 +10,12 @@ namespace BattleshipsServer
 
         private Socket p1;
         private Socket p2;
-        byte[] b = new byte[10];
-        byte[] bufferFromP1 = new byte[10];
-        byte[] bufferFromP2 = new byte[10];
-        bool isFinished = false;
+        private byte[] buffer = new byte[10];
+        private bool isFinished = false;
 
         private Server()
         {
-
+            
             IPAddress ipAd = IPAddress.Parse(Message.IP);
             TcpListener myListener = new TcpListener(ipAd, 8001);
             myListener.Start();
@@ -27,7 +25,7 @@ namespace BattleshipsServer
             p1 = myListener.AcceptSocket();
             Console.WriteLine("Connection accepted from " + p1.RemoteEndPoint);
             Console.WriteLine("Waiting for player 2 .....");
-            sendMessage(p1, "Waiting for player 2 ....");
+            sendMessage(p1, Message.WAIT_FOR_PLAYER_2);
             p2 = myListener.AcceptSocket();
             Console.WriteLine("Connection accepted from " + p2.RemoteEndPoint);
 
@@ -40,9 +38,6 @@ namespace BattleshipsServer
             p1.Close();
             Console.WriteLine("Closing connection to + " + p2.RemoteEndPoint);
             p2.Close();
-
-            Console.ReadLine();
-
         }
         
         static void Main(string[] args)
@@ -52,25 +47,15 @@ namespace BattleshipsServer
 
         private void turn(Socket p1, Socket p2)
         {
-            Console.WriteLine("Server Before sending shoot");
             sendMessage(p1, Message.SHOOT); //send shoot instruction to p1
-            Console.WriteLine("Server After sending shoot");
             int x = -1;
             int y = -1;
-            Console.WriteLine("Server Before receiving the shoot coordinates");
             receiveCoordinates(p1, out x, out y); //receive the chosen coordinates form p1
-            Console.WriteLine("Server After receiving the shoot coordinates");
-            Console.WriteLine("Server Before sending the shoot coordinates to the other player");
             sendMessage(p2, Message.RECEIVE_COORDINATES); //inform p2 that he has to check damage-coordinates
             sendCoordinates(p2, x, y); // send coordinates to p2
-            Console.WriteLine("Server After sending the shoot coordinates to the other player");
             sendMessage(p2, Message.CHECK_DAMAGE);
-            Console.WriteLine("Server Before receiving the damage message");
             String msg = receiveMessage(p2); // receive damageMessage
-            Console.WriteLine("Server After receiving the damage message");
-            Console.WriteLine("Server Before sending the damage message to the shooting player");
             sendMessage(p1, msg);  //send the damageMessage to p1
-            Console.WriteLine("Server After sending the damage message to the shooting player");
             if (msg == Message.YOU_HAVE_WON) //TODO changed from .equals to ==
             {
                 isFinished = true;
@@ -107,35 +92,32 @@ namespace BattleshipsServer
         private void sendCoordinates(Socket s, int x, int y)
         {
             sendMessage(s, BitConverter.GetBytes(x));
-            s.Receive(b); //Wait for ACK
-            Console.WriteLine(s.RemoteEndPoint + " has sent: " + convertToStringMessage(b));
+            s.Receive(buffer); //Wait for ACK
+            Console.WriteLine(s.RemoteEndPoint + " has sent: " + convertToStringMessage(buffer));
             sendMessage(s, BitConverter.GetBytes(y));
-            Array.Clear(b, 0, b.Length);
-            s.Receive(b);
-            Console.WriteLine(s.RemoteEndPoint + " has sent: " + convertToStringMessage(b));
+            Array.Clear(buffer, 0, buffer.Length);
+            s.Receive(buffer);
+            Console.WriteLine(s.RemoteEndPoint + " has sent: " + convertToStringMessage(buffer));
         }
 
         private void sendMessage(Socket s, byte[] data)
         {
             Console.WriteLine("\nsending " + convertToStringMessage(data) + " to " + s.RemoteEndPoint);
-            s.Send(data);
-        }
-
-        private void sendMessage(Socket s, String data)
-        {
-            Console.WriteLine("\nsending " + data + " to " + s.RemoteEndPoint);
-
-            ASCIIEncoding asen = new ASCIIEncoding();
-            byte[] toSend = asen.GetBytes(data);
-
             try
             {
-                s.Send(toSend);
+                s.Send(data);
             }
             catch (SocketException e)
             {
                 Console.WriteLine(e.StackTrace);
             }
+        }
+
+        private void sendMessage(Socket s, String data)
+        {
+            ASCIIEncoding asen = new ASCIIEncoding();
+            byte[] toSend = asen.GetBytes(data);
+            sendMessage(s, toSend);
         }
         
         private void sendMessageToAll(String data)
@@ -147,24 +129,24 @@ namespace BattleshipsServer
         private void receiveCoordinates(Socket s, out int x, out int y) //TODO test change bufferfromp... to b buffer
         {
             //TODO socketException after youWin
-            s.Receive(bufferFromP1);
-            x = BitConverter.ToInt32(bufferFromP1, 0);
+            s.Receive(buffer);
+            x = BitConverter.ToInt32(buffer, 0);
             Console.WriteLine("Received x: " + x);
-            Array.Clear(bufferFromP1, 0, bufferFromP1.Length);
-            s.Receive(bufferFromP1);
-            y = BitConverter.ToInt32(bufferFromP1, 0);
+            Array.Clear(buffer, 0, buffer.Length);
+            s.Receive(buffer);
+            y = BitConverter.ToInt32(buffer, 0);
             Console.WriteLine("Received y: " + y);
         }
 
         private String receiveMessage(Socket s)
         {
-            s.Receive(b);
-            String messageReceived = convertToStringMessage(b);
-
+            s.Receive(buffer);
+            String messageReceived = convertToStringMessage(buffer);
             Console.WriteLine("\nReceived " + messageReceived + " form " + s.RemoteEndPoint);
 
             return messageReceived;
         }
+
         private String convertToStringMessage(byte[] b)
         {
 
@@ -179,5 +161,6 @@ namespace BattleshipsServer
             }
             return sb.ToString();
         }
+
     }
 }

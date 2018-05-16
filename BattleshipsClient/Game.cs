@@ -3,32 +3,19 @@ using System.Text;
 
 namespace BattleshipsClient
 {
-
-
     class Game
     {
-        private Mark[,] gameField = new Mark[10, 10]; //y, x
-        private Ship[] fleet = new Ship[10]; //TODO change back
+        private const int FIELD_SIZE = 10;
 
+        private Mark[,] gameField = new Mark[FIELD_SIZE, FIELD_SIZE]; //y, x
+        
         public Game()
         {
             initGameField();
         }
-        
-            public Boolean isFinished()
+
+        public Boolean isFinished()
         {
-            Boolean isFinished = true;
-
-            /*
-            foreach (Ship s in fleet) {
-                if (s.hp != 0)
-                {
-                    isFinished = false;
-                }
-            }
-            */
-
-            //TODO
             return false;
         }
 
@@ -36,39 +23,21 @@ namespace BattleshipsClient
         {
             Boolean newDamage = false;
 
-            Console.WriteLine("x" + x);
-            Console.WriteLine("y" + y);
-
-            if (gameField[y, x] == Mark.X)
+            if (gameField[y, x] == Mark._)
             {
-                Console.WriteLine("Ship was already hit here");
-                return false;
-            }
-            else if (gameField[y, x] == Mark._)
-            {   
                 Console.WriteLine("Missed");
             }
             else
             {
-                //Ship s = getShip(x, y);
-                //s.hp--;
-                //gameField[y, x] = Mark.X;
-                //printGameField();
                 newDamage = true;
             }
             return newDamage;
         }
 
-
-        private Ship getShip(int x, int y)
-        {
-            Mark m = gameField[y, x];
-            return fleet[(int)m - 1];
-        }
-
         public int intYValue(char y)
         {
-            if (Char.IsLower(y)) {
+            if (Char.IsLower(y))
+            {
                 return y - 97;
             }
             else
@@ -76,194 +45,65 @@ namespace BattleshipsClient
                 return y - 65;
             }
         }
-        
-        public void shoot(out int x, out int y)
-        {
-            enterCoordinates(out x, out y, validSettingInput);
-      
-        }
-
-        public void setTestFleet()
-        {
-            int x = 0;
-            int y = 0;
-            int length = 5;
-            
-            Ship s = new Ship(x, y, Position.horizontal, length, Mark.A);
-            /*
-            fleet[0] = setShip(s);
-            x = 5;
-            y = 5;
-            length = 4;
-            s = new Ship(x, y, Position.vertical, length, Mark.B);
-            fleet[1] = setShip(s);
-            x = 0;
-            y = 3;
-            s = new Ship(x, y, Position.vertical, length, Mark.C);
-            fleet[2] = setShip(s);
-            x = 5;
-            y = 3;
-            length = 3;
-            s = new Ship(x, y, Position.horizontal, length, Mark.D);
-            fleet[3] = setShip(s);
-            x = 7;
-            y = 0;
-            s = new Ship(x, y, Position.horizontal, length, Mark.E);
-            fleet[4] = setShip(s);
-            x = 9;
-            y = 7;
-            s = new Ship(x, y, Position.vertical, length, Mark.F);
-            fleet[5] = setShip(s);
-            x = 0;
-            y = 9;
-            */
-            length = 2;
-            /*
-            s = new Ship(x, y, Position.horizontal, length, Mark.G);
-            fleet[6] = setShip(s);
-            x = 3;
-            y = 3;
-            s = new Ship(x, y, Position.vertical, length, Mark.H);
-            fleet[7] = setShip(s);
-            x = 2;
-            y = 6;
-            s = new Ship(x, y, Position.vertical, length, Mark.I);
-            fleet[8] = setShip(s);
-            */
-            x = 0;
-            y = 0;
-            s = new Ship(x, y, Position.horizontal, length, Mark.A);
-            fleet[0] = setShip(s);
-        }
-
-        public void setFleet()
-        {
-            int length = 5;
-            int nTypes = 4;
-            int nShips = 1;
-            Mark m = Mark.A;
-            Boolean isValidShip = false;
-            printGameField();
-
-            for (int i = 0; i < nTypes; i++)
-            {
-                for (int j = 0; j < nShips; j++)
-                {
-                    Ship s = null;
-                    while (!isValidShip)
-                    {
-                        Console.WriteLine("Setting ship with length " + length);
-                        Position p = enterPostioning();
-                        int x = -1;
-                        int y = -1;
-                        enterCoordinates(out x, out y, validSettingInput);
-                        s = new Ship(x, y, p, length, m);
-                        isValidShip = checkValidShip(s);
-                    }
-                    Console.WriteLine("x" + s.x);
-                    Console.WriteLine("y" + s.y);
-                    Console.WriteLine("i" + i);
-                    Console.WriteLine("j" + j);
-
-                    fleet[i+j] = setShip(s); //TODO check if fleet[i+j] is correct
-                    m++;
-                    printGameField();
-                    isValidShip = false;
-                }
-                nShips++;
-                length--;
-            }
-
-            return;
-        }
-
+        //TODO change BOLEAN to bool everywhere
         public bool checkValidShip(Ship s)
         {
+            printGameField();
+            
+            if (s.Position == Position.horizontal)
+            {
 
+                if ((s.X + (s.Length-1)) >= FIELD_SIZE)
+                {
+                    return false;
+                }
+                for (int i = 0; i < s.Length; i++)
+                {
+                    if (gameField[s.Y, s.X+ i] != Mark._)
+                    {
+                        return false;
+                    }
+                }
 
-      
-            //TODO check if ship is out of gameField
-            //TODO check if there is a neighbouring ship
-
+            }
+            else
+            {
+                if ((s.Y + (s.Length - 1)) >= FIELD_SIZE)
+                {
+                    return false;
+                }
+                for (int i = 0; i < s.Length; i++)
+                {
+                    if (gameField[s.Y + i, s.X] != Mark._)
+                    {
+                        return false;
+                    }
+                }
+            }
+            
             return true;
         }
 
         public Ship setShip(Ship s)
         {
-            if (s.positioning == Position.horizontal)
+            if (s.Position == Position.horizontal)
             {
-                for (int i = 0; i < s.length; i++)
+                for (int i = 0; i < s.Length; i++)
                 {
-                    gameField[s.y, s.x + i] = s.type;
+                    gameField[s.Y, s.X + i] = s.Type;
                 }
             }
             else
             {
-                for (int i = 0; i < s.length; i++)
+                for (int i = 0; i < s.Length; i++)
                 {
-                    gameField[s.y + i, s.x] = s.type;
+                    gameField[s.Y + i, s.X] = s.Type;
                 }
             }
             return s;
         }
 
-        public Position enterPostioning()
-        {
-            Console.WriteLine("Please enter positioning (h = horizontal, v = vertical)");
-            char c = Console.ReadKey().KeyChar;
-
-            while (c != 'h' && c != 'v')
-            {
-                Console.WriteLine("\nIncorrect Input");
-                Console.WriteLine("Please enter positioning (h = horizontal, v = vertical)");
-                c = Console.ReadKey().KeyChar;
-            }
-
-            if (c == 'h')
-            {
-                return Position.horizontal;
-            }
-            else
-            {
-                return Position.vertical;
-            }
-        }
-
-        public delegate Boolean checkInput(int x);
-
-        public void enterCoordinates(out int x, out int y, checkInput checkInput)
-        {
-
-            Console.WriteLine("Please enter valid X-Coordinate");
-            x = (int)Char.GetNumericValue(Console.ReadKey().KeyChar);
-
-            while (!checkInput(x))
-            {
-                Console.WriteLine("\nIncorrect Input");
-                Console.WriteLine("Please enter valid X-Coordinate");
-                x = (int)Char.GetNumericValue(Console.ReadKey().KeyChar);
-            }
-
-            char c;
-            Console.WriteLine("\nPlease enter valid Y-Coordinate");
-            c = Console.ReadKey().KeyChar;
-            y = intYValue(c);
-
-            while (!checkInput(y))
-            {
-                Console.WriteLine("\nIncorrect Input");
-                Console.WriteLine("Please enter valid Y-Coordinate");
-                c = Console.ReadKey().KeyChar;
-                y = intYValue(c);
-            }
-        }
-
-        private Boolean validSettingInput(int i)
-        {
-            return (i >= 0 && i <= 10);
-        }
-
-        public String printGameField() //TODO visibility
+        public String printGameField()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("\n");
@@ -305,57 +145,28 @@ namespace BattleshipsClient
         }
     }
 
-    public enum Position { horizontal = 1, vertical = 2 };
+    public enum Position { horizontal = 0, vertical = 1 }; //TODO changed if problems occur check here
 
-    enum Mark { X = 0, A = 1, B = 2, C = 3, D = 4, E = 5, F = 6, G = 7, H = 8, I = 9, J = 10, _ = -1 }
+    enum Mark { A = 1, B = 2, C = 3, D = 4, E = 5, F = 6, G = 7, H = 8, I = 9, J = 10, _ = 0 } //TODO changed if problems occur check here
 
     class Ship
     {
-        public Mark type;
-        public int hp;
-        public Position positioning;
+        public Mark Type { get; private set; }
+        public Position Position { get; private set; }
 
-        public Position Positioning
-        {
-            get => positioning;
-            private set => positioning = value;
-        }
+        public int Length { get; private set; }
 
-        public int length;
+        public int X { get; private set; }
 
-        public int Length
-        {
-            get => length;
-            private set => length = value;
-        }
-
-
-        public int x;
-
-        public int X
-        {
-            get => x;
-            private set => x = value;
-
-        }
-
-        public int y;
-
-        public int Y
-        {
-            get => y;
-            private set => y = value;
-        }
+        public int Y { get; private set; }
 
         public Ship(int x, int y, Position positioning, int length, Mark m)
         {
-            this.x = x;
-            this.y = y;
-            this.length = length;
-            this.positioning = positioning;
-            this.type = m;
-            this.hp = this.length;
-
+            this.X = x;
+            this.Y = y;
+            this.Length = length;
+            this.Position = positioning;
+            this.Type = m;
         }
     }
 }

@@ -14,7 +14,6 @@
 
     <Window.Resources>
         <converters:InvertableBooleanToVisibilityConverter x:Key="InvertedBoolToVis" />
-        <converters:InvertedBooleanConverter x:Key="InvertedBoolConverter" />
     </Window.Resources>
 
     <Grid x:Name="LayoutRoot">
@@ -39,7 +38,7 @@
                            FontSize="32"
                            FontWeight="Bold"/>
 
-                <Button Grid.Column="1" Content="{Binding StartButtonContent}" Width="80" Height="40" FontSize="25" FontWeight="Bold" Command="{Binding StartCommand}" />
+                <Button Grid.Column="1" Content="{Binding StartButtonContent}" Width="300" Height="40" FontSize="25" FontWeight="Bold" IsEnabled="{Binding IsStartButtonEnabled}" Command="{Binding StartCommand}" />
 
                 <TextBlock Grid.Column="2" 
                            Text="{Binding EnemyHPLeft}"
@@ -71,7 +70,7 @@
                                 </Grid>
                                 
                                 <!-- COVERING BUTTON USER SELECTS TO UNCOVER -->
-                                <Button Content="{Binding Status}"
+                                <Button
                                         Visibility="{Binding Covered, Converter={StaticResource InvertedBoolToVis}, ConverterParameter=Normal}" 
                                         Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.UncoverTileCommand}" 
                                         CommandParameter="{Binding}">

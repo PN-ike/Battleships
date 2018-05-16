@@ -1,11 +1,10 @@
-﻿using System;
-using Prism.Mvvm;
+﻿using Prism.Mvvm;
 
 namespace BattleshipsClient
 {
     public class Tile : BindableBase
     {
-       private bool _covered = true;
+        private bool _covered = true;
         private int _index;
         private int _row;
         private int _col;

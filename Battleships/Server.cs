@@ -65,13 +65,13 @@ namespace BattleshipsServer
 
         private void playGame()
         {
-            Boolean p1Turn = true;
+            bool p1Turn = true;
 
             sendMessageToAll(Message.SET_YOUR_FLEET);
             receiveMessage(p1);
             receiveMessage(p2);
 
-            sendMessageToAll("Start");
+            sendMessageToAll(Message.START); //TODO changed from "Start" to Message.Start
             while (!isFinished)
             {
                 if (p1Turn)
@@ -85,7 +85,7 @@ namespace BattleshipsServer
                     p1Turn = true;
                 }
             }
-            Console.ReadLine();
+
             sendMessageToAll(Message.CYA);
         }
 
@@ -126,7 +126,7 @@ namespace BattleshipsServer
             sendMessage(p2, data);
         }
 
-        private void receiveCoordinates(Socket s, out int x, out int y) //TODO test change bufferfromp... to b buffer
+        private void receiveCoordinates(Socket s, out int x, out int y) 
         {
             //TODO socketException after youWin
             s.Receive(buffer);

@@ -79,19 +79,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App.xaml.cs">
+    <Compile Include="View\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Client.cs" />
     <Compile Include="Converters\InvertibleBooleanToVisibilityConverter.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="GameWindow.xaml.cs">
+    <Compile Include="View\GameWindow.xaml.cs">
       <DependentUpon>GameWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Input.cs" />
+    <Compile Include="Models\Input.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tile.cs" />
+    <Compile Include="Models\Tile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -104,11 +104,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="App.xaml">
+    <Page Include="View\App.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="GameWindow.xaml">
+    <Page Include="View\GameWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,9 +1,5 @@
 ﻿using Prism.Mvvm;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BattleshipsClient
 {
@@ -11,9 +7,9 @@ namespace BattleshipsClient
     {
         private int _index;
         private int _row;
-        private Boolean _isInputEnabled = false; //TODO set false for actual palying
+        private bool _isInputEnabled = false; //TODO set false for actual palying
 
-        public Boolean IsInputEnabled
+        public bool IsInputEnabled
         {
             get { return _isInputEnabled; }
             set { SetProperty(ref _isInputEnabled, value); }

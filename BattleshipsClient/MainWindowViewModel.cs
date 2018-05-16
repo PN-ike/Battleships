@@ -8,17 +8,17 @@ namespace BattleshipsClient
 {
     public class MainWindowViewModel : BindableBase
     {
-        #region Private Members
-
         Client c;// = new Client(); //TODO delete for actual playing
+        private Game game = new Game();
+
         private Tile previousTurnedTile;
-        
-        private int _rows = 10;
-        private int _cols = 10;
+
         private int _myHPLeft = 30;
         private int _enemyHPLeft = 30;
+        
         private Tile[] _tiles = new Tile[100];
-        private bool _gameOver = false;
+        private int _rows = 10;
+        private int _cols = 10;
         private bool _isControlPanelEnabled = false;
         private bool _isStartButtonEnabled = true;
         private string _startButtonContent;
@@ -27,29 +27,13 @@ namespace BattleshipsClient
         private int setCounter = 0;
         private bool fleetSet = false;
 
-        private void InitialiseInput()
+
+        [STAThread]
+        static void Main(string[] args)
         {
-            var inputs = new Input[10];
-            for (int i = 0; i < 10; i++)
-            {
-
-                var input = new Input
-                {
-                    Row = i,
-                    Index = i,
-                    XValue = 0,
-                    YValue = i,
-                    Position = Position.horizontal
-                };
-                inputs[i] = input;
-            }
-            
-            Inputs = inputs;
+            GameWindow gameWindow = new GameWindow();
+            gameWindow.ShowDialog();
         }
-        
-        #endregion
-
-        #region Contructor
 
         public MainWindowViewModel()
         {
@@ -60,10 +44,6 @@ namespace BattleshipsClient
             InitialiseInput();
             StartButtonContent = "Start";
         }
-
-        #endregion
-
-        #region Private Methods
 
         private void Start()
         {
@@ -80,7 +60,7 @@ namespace BattleshipsClient
                     int x = -1;
                     int y = -1;
 
-                    while ((serverMessage = c.receiveMessageString()) != Message.CYA)
+                    while ((serverMessage = c.ReceiveMessageString()) != Message.CYA)
                     {
                         switch (serverMessage)
                         {
@@ -88,55 +68,50 @@ namespace BattleshipsClient
                             case Message.SET_YOUR_FLEET:
                                 StartButtonContent = "Please Set Your Fleet";
 
-                                foreach(Input i in Inputs) 
+                                foreach (Input i in Inputs)
                                 {
                                     i.IsInputEnabled = true;
                                 }
-                                                                
+
                                 break;
                             case Message.SHOOT:
                                 StartButtonContent = "Your Turn";
                                 IsControlPanelEnabled = true;
-                                 break;
+                                break;
                             case Message.RECEIVE_COORDINATES:
-                                Console.WriteLine("\ni am checking the shooting coordinates"); //TODO
                                 x = -1;
                                 y = -1;
-                                c.receiveCoordinates(out x, out y);
-                                Console.WriteLine("\nthe coordinates are: " + x + " " + y); //TODO
+                                c.ReceiveCoordinates(out x, out y);
                                 break;
                             case Message.CHECK_DAMAGE:
-                                Console.WriteLine("\nchecking damage at: " + x + " " + y); //TODO
-                                Boolean newDamage = c.game.checkDamage(x, y);
-                                
+                                bool newDamage = game.CheckDamage(x, y);
+
                                 if (newDamage)
                                 {
-                                    Console.WriteLine("Before");
-                                    Boolean isFinished = c.game.isFinished();
-                                    Console.WriteLine("After");
+                                    MyHPLeft--; 
+                                    bool isFinished = (MyHPLeft == 0);
                                     if (isFinished)
                                     {
-                                        MyHPLeft--; //TODO test hp count
-                                        c.sendMessage(Message.YOU_HAVE_WON);
+                                        StartButtonContent = "YOU LOSE";
+                                        c.SendMessage(Message.YOU_HAVE_WON);
                                     }
                                     else
                                     {
-                                        MyHPLeft--;
-                                        c.sendMessage(Message.NEW_DAMAGE);
+                                        c.SendMessage(Message.NEW_DAMAGE);
                                     }
 
                                 }
                                 else
                                 {
-                                    c.sendMessage(Message.MISSED);
+                                    c.SendMessage(Message.MISSED);
                                 }
-                                
+
                                 break;
                             case Message.YOU_HAVE_WON:
                                 EnemyHPLeft--;
                                 previousTurnedTile.IsShip = true;
                                 previousTurnedTile.Covered = false;
-                                Console.WriteLine("I have won ... great success");
+                                StartButtonContent = "YOU WIN";
                                 break;
                             case Message.NEW_DAMAGE:
                                 EnemyHPLeft--;
@@ -148,11 +123,11 @@ namespace BattleshipsClient
                                 previousTurnedTile.Covered = false;
                                 break;
                             default:
-                                Console.WriteLine("########default########");
                                 break;
                         }
                     }
-                    c.tcpclnt.Close();
+
+                    c.CloseConnection();
 
                     Console.Read();
 
@@ -163,9 +138,29 @@ namespace BattleshipsClient
                 }
             }
            ).Start();
-            
         }
 
+
+        private void InitialiseInput()
+        {
+            var inputs = new Input[10];
+            for (int i = 0; i < 10; i++)
+            {
+
+                var input = new Input
+                {
+                    Row = i, 
+                    Index = i, //TODO delete index
+                    XValue = 0,
+                    YValue = 0,
+                    Position = Position.Horizontal
+                };
+                inputs[i] = input;
+            }
+            
+            Inputs = inputs;
+        }
+        
         private void InitialiseGameTiles()
         {
             var tiles = new Tile[100];
@@ -190,15 +185,15 @@ namespace BattleshipsClient
 
         private void UncoverTile(Tile tile)
         {
-            c.sendMessage(BitConverter.GetBytes(tile.Col));
-            c.sendMessage(BitConverter.GetBytes(tile.Row)); 
+            c.SendMessage(BitConverter.GetBytes(tile.Col));
+            c.SendMessage(BitConverter.GetBytes(tile.Row)); 
             previousTurnedTile = tile; 
             IsControlPanelEnabled = false;
             StartButtonContent = "Enemies Turn";
             return;
         }
 
-        private int getLengthFromRowNumber(int rowNumber)
+        private int GetLengthFromRowNumber(int rowNumber)
         {
             if (rowNumber == 0) { return 5; }
             else if (rowNumber == 1 || rowNumber == 2) { return 4; }
@@ -208,40 +203,33 @@ namespace BattleshipsClient
 
         private void SetShip(Input i)
         {
-            if ((int)i.Position > 1) { return; } // nn valid Position enum
+            if ((int)i.Position > 1) { return; } // check if Position enum is valid 
 
             bool setSuccessfully = false;
             Mark m = (Mark)(i.Row)+1;
-            int length = getLengthFromRowNumber(i.Row);
+            int length = GetLengthFromRowNumber(i.Row);
             Ship s = new Ship(i.XValue, i.YValue, i.Position, length, m);
-            setSuccessfully = c.game.checkValidShip(s);
+            setSuccessfully = game.CheckValidShip(s);
             
             
             if (setSuccessfully)
             {
                 i.IsInputEnabled = false;
-                c.game.setShip(s);
+                game.SetShip(s);
                 setCounter++;
                 if(setCounter == 10)
                 {
                     fleetSet = true;
                 }
             }
-            c.game.printGameField();
 
             if (fleetSet)
             {
-                Console.WriteLine("Fleet set");
-                c.sendMessage(Message.ACK);
-
+                StartButtonContent = "Waiting for other player";
+                c.SendMessage(Message.ACK);
             }
             return;
         }
-
-
-        #endregion
-
-        #region Public Properties
 
         public DelegateCommand StartCommand { get; private set; }
         public DelegateCommand<Tile> UncoverTileCommand { get; private set; }
@@ -264,12 +252,7 @@ namespace BattleshipsClient
             get { return _startButtonContent; }
             set { SetProperty(ref _startButtonContent, value); }
         }
-
-        public bool GameOver
-        {
-            get { return _gameOver; }
-            set { SetProperty(ref _gameOver, value); }
-        }
+        
         public bool IsControlPanelEnabled
         {
             get { return _isControlPanelEnabled; }
@@ -310,7 +293,6 @@ namespace BattleshipsClient
             get { return _enemyHPLeft; }
             set { SetProperty(ref _enemyHPLeft, value); }
         }
-        #endregion
     }
 
 }

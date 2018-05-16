@@ -8,10 +8,9 @@ namespace BattleshipsClient
 {
     class Client
     {
-        public Game game = new Game();
-        public TcpClient tcpclnt;
+        private TcpClient tcpclnt;
 
-        public Client()
+        internal Client()
         {
             //TODO uncomment for actual playing
             tcpclnt = new TcpClient();
@@ -20,14 +19,7 @@ namespace BattleshipsClient
             Console.WriteLine("\nConnected");
         }
 
-        [STAThread]
-        static void Main(string[] args)
-        {
-            GameWindow gameWindow = new GameWindow();
-            gameWindow.ShowDialog();
-        }
-
-        public String receiveMessageString()
+        internal String ReceiveMessageString()
         {
             StringBuilder sb = new StringBuilder();
             Stream stm = this.tcpclnt.GetStream();
@@ -44,26 +36,26 @@ namespace BattleshipsClient
             return sb.ToString();
         }
 
-        public Byte[] receiveMessageBytes()
+        internal Byte[] ReceiveMessageBytes()
         {
             Stream stm = this.tcpclnt.GetStream();
 
-            byte[] bb = new byte[100];
-            int k = stm.Read(bb, 0, 100);
+            byte[] buffer = new byte[100];
+            int k = stm.Read(buffer, 0, 100);
 
-            return bb;
+            return buffer;
         }
 
 
-        public void receiveCoordinates(out int x, out int y)
+        internal void ReceiveCoordinates(out int x, out int y)
         {
-            x = BitConverter.ToInt32(receiveMessageBytes(), 0);
-            sendMessage(Message.ACK);
-            y = BitConverter.ToInt32(receiveMessageBytes(), 0);
-            sendMessage(Message.ACK);
+            x = BitConverter.ToInt32(ReceiveMessageBytes(), 0);
+            SendMessage(Message.ACK);
+            y = BitConverter.ToInt32(ReceiveMessageBytes(), 0);
+            SendMessage(Message.ACK);
         }
 
-        public void sendMessage(String message)
+        internal void SendMessage(String message)
         {
             ASCIIEncoding asen = new ASCIIEncoding();
             Stream stm = this.tcpclnt.GetStream();
@@ -72,10 +64,16 @@ namespace BattleshipsClient
             stm.Write(ba, 0, ba.Length);
         }
 
-        public void sendMessage(byte[] message)
+        internal void SendMessage(byte[] message)
         {
             Stream stm = this.tcpclnt.GetStream();
             stm.Write(message, 0, message.Length);
+        }
+
+        internal void CloseConnection()
+        {
+            tcpclnt.Close();
+            return;
         }
      
     }

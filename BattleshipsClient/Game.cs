@@ -3,54 +3,26 @@ using System.Text;
 
 namespace BattleshipsClient
 {
-    class Game
+    internal class Game
     {
         private const int FIELD_SIZE = 10;
-
         private Mark[,] gameField = new Mark[FIELD_SIZE, FIELD_SIZE]; //y, x
         
-        public Game()
+        internal Game()
         {
-            initGameField();
+            InitGameField();
         }
-
-        public Boolean isFinished()
+        
+        internal bool CheckDamage(int x, int y)
         {
-            return false;
+            return !(gameField[y, x] == Mark._);
         }
-
-        public Boolean checkDamage(int x, int y)
+        
+        internal bool CheckValidShip(Ship s)
         {
-            Boolean newDamage = false;
-
-            if (gameField[y, x] == Mark._)
-            {
-                Console.WriteLine("Missed");
-            }
-            else
-            {
-                newDamage = true;
-            }
-            return newDamage;
-        }
-
-        public int intYValue(char y)
-        {
-            if (Char.IsLower(y))
-            {
-                return y - 97;
-            }
-            else
-            {
-                return y - 65;
-            }
-        }
-        //TODO change BOLEAN to bool everywhere
-        public bool checkValidShip(Ship s)
-        {
-            printGameField();
+            PrintGameField();
             
-            if (s.Position == Position.horizontal)
+            if (s.Position == Position.Horizontal)
             {
 
                 if ((s.X + (s.Length-1)) >= FIELD_SIZE)
@@ -64,7 +36,6 @@ namespace BattleshipsClient
                         return false;
                     }
                 }
-
             }
             else
             {
@@ -84,26 +55,26 @@ namespace BattleshipsClient
             return true;
         }
 
-        public Ship setShip(Ship s)
+        internal Ship SetShip(Ship s)
         {
-            if (s.Position == Position.horizontal)
+            if (s.Position == Position.Horizontal)
             {
                 for (int i = 0; i < s.Length; i++)
                 {
-                    gameField[s.Y, s.X + i] = s.Type;
+                    gameField[s.Y, s.X + i] = s.Mark;
                 }
             }
             else
             {
                 for (int i = 0; i < s.Length; i++)
                 {
-                    gameField[s.Y + i, s.X] = s.Type;
+                    gameField[s.Y + i, s.X] = s.Mark;
                 }
             }
             return s;
         }
 
-        public String printGameField()
+        private String PrintGameField()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("\n");
@@ -133,7 +104,7 @@ namespace BattleshipsClient
             return field;
         }
 
-        private void initGameField()
+        private void InitGameField()
         {
             for (int i = 0; i < gameField.GetLength(0); i++)
             {
@@ -145,13 +116,13 @@ namespace BattleshipsClient
         }
     }
 
-    public enum Position { horizontal = 0, vertical = 1 }; //TODO changed if problems occur check here
+    public enum Position { Horizontal = 0, Vertical = 1 }; 
 
-    enum Mark { A = 1, B = 2, C = 3, D = 4, E = 5, F = 6, G = 7, H = 8, I = 9, J = 10, _ = 0 } //TODO changed if problems occur check here
+    enum Mark { A = 1, B = 2, C = 3, D = 4, E = 5, F = 6, G = 7, H = 8, I = 9, J = 10, _ = 0 } 
 
     class Ship
     {
-        public Mark Type { get; private set; }
+        public Mark Mark { get; private set; }
         public Position Position { get; private set; }
 
         public int Length { get; private set; }
@@ -160,13 +131,13 @@ namespace BattleshipsClient
 
         public int Y { get; private set; }
 
-        public Ship(int x, int y, Position positioning, int length, Mark m)
+        public Ship(int x, int y, Position position, int length, Mark mark)
         {
-            this.X = x;
-            this.Y = y;
-            this.Length = length;
-            this.Position = positioning;
-            this.Type = m;
+            X = x;
+            Y = y;
+            Length = length;
+            Position = position;
+            Mark = mark;
         }
     }
 }
